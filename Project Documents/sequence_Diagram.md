@@ -1,20 +1,21 @@
 ```mermaid
 sequenceDiagram
-    participant Resident
-    participant LeaseOfficeStaff
-    participant MaintenanceStaff
+    participant Client
+    participant TicketService
+    participant TicketDAO
+    participant UserService
+    participant UserDAO
 
-    Resident->>LeaseOfficeStaff: Report issue (create ticket)
-    LeaseOfficeStaff->>TicketSystem: Create new ticket
-    TicketSystem-->>LeaseOfficeStaff: Ticket created (ID, status: "In Progress")
-    LeaseOfficeStaff->>MaintenanceStaff: Assign ticket to staff
-    MaintenanceStaff-->>TicketSystem: Update ticket status to "In Progress"
+    Client->>TicketService: assignTicket(ticketId, userId)
+    TicketService->>TicketDAO: findById(ticketId)
+    TicketDAO-->>TicketService: Ticket
+    TicketService->>UserService: getUserById(userId)
+    UserService->>UserDAO: findById(userId)
+    UserDAO-->>UserService: User
+    UserService-->>TicketService: User
+    TicketService->>Ticket: assignToUser(User)
+    TicketService->>TicketDAO: save(Ticket)
+    TicketDAO-->>TicketService: Confirmation
+    TicketService-->>Client: Assignment Confirmation
 
-    MaintenanceStaff->>Resident: Resolve issue (update status)
-    MaintenanceStaff-->>TicketSystem: Update status to "Completed"
-    TicketSystem-->>LeaseOfficeStaff: Notify ticket completed
-
-    Resident->>LeaseOfficeStaff: Reopen ticket (if issue unresolved)
-    LeaseOfficeStaff->>TicketSystem: Update status to "Reopened"
-    TicketSystem-->>MaintenanceStaff: Notify reopened ticket
 ```
